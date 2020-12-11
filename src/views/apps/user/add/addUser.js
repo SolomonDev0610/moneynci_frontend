@@ -20,6 +20,7 @@ import Flatpickr from "react-flatpickr";
 
 import "flatpickr/dist/themes/light.css";
 import "../../../../assets/scss/plugins/forms/flatpickr/flatpickr.scss"
+import InputMaskDate from "../edit/InputMaskDate";
 
 
 toast.configure(); // required to work with toast
@@ -66,7 +67,7 @@ class AddUser extends React.Component {
   }
 
   sendForm = (data) => {
-    axios.post("http://vps-a1b847f6.vps.ovh.net:8080/api/register", {
+    axios.post("http://localhost:8000/api/register", {
       email: data.email,
       password: data.password,
       name: data.first_name + " " + data.last_name
@@ -75,7 +76,7 @@ class AddUser extends React.Component {
           console.log(result)
           if (result.data.accessToken) {
             axios
-                .post("http://vps-a1b847f6.vps.ovh.net:8080/api/personal_information", {
+                .post("http://localhost:8000/api/personal_information", {
                   user_id: 10,
                   last_name: data.last_name,
                   maiden_name: data.maiden_name,
@@ -115,11 +116,17 @@ class AddUser extends React.Component {
         })
   }
     handledob = date => {
-        var test = new Date(date[0])
-        var MyDateString = test.getFullYear() + "-" + ('0' + (test.getMonth()+1)).slice(-2) + "-" + ('0' + test.getDate()).slice(-2);
-
+      var lstDate = date.split("/");
+      // var MyDateString = test.getFullYear() + "-" + ('0' + (test.getMonth()+1)).slice(-2) + "-" + ('0' + test.getDate()).slice(-2)
+      if(lstDate.length == 3) {
+        var MyDateString = lstDate[2] + "-" + lstDate[1] + "-" + lstDate[0];
+        this.setState({
+          dob: MyDateString
+        })
+      }
         this.setState({ data: { ...this.state.data, birth_date: MyDateString} })
     }
+
   handleSubmit = e => {
     e.preventDefault()
     this.sendForm(this.state.data)
@@ -258,14 +265,8 @@ class AddUser extends React.Component {
             </Col>
             <Col md="6" sm="12">
               <FormGroup>
-                  <Flatpickr
-                      id="dob"
-
-                      className="form-control"
-                      options={{ dateFormat: "d/m/Y" }}
-                      placeholder="Date de naissance"
-                      defaultValue={this.state.data["birth_date"]}
-                      onChange={date => this.handledob(date)}
+                  <InputMaskDate
+                      onChange={e => this.handledob(e.target.value)}
                   />
               </FormGroup>
             </Col>

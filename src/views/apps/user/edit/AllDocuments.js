@@ -130,7 +130,7 @@ class AllDocuments extends React.Component {
         Authorization: "Bearer " + localStorage.getItem("token")
       }
     }
-    await axios.get("http://vps-a1b847f6.vps.ovh.net:8080/api/documents", Config).then(response => {
+    await axios.get("http://localhost:8000/api/documents", Config).then(response => {
       let rowData = response.data
       this.setState({ rowData })
     })
@@ -142,7 +142,7 @@ class AllDocuments extends React.Component {
         Authorization: "Bearer " + localStorage.getItem("token")
       }
     }
-    axios.delete("http://vps-a1b847f6.vps.ovh.net:8080/api/documents/" + id, Config).then(response => {})
+    axios.delete("http://localhost:8000/api/documents/" + id, Config).then(response => {})
   }
 
   onGridReady = params => {
@@ -220,7 +220,7 @@ class AllDocuments extends React.Component {
         Authorization: "Bearer " + localStorage.getItem("token")
       }
     }
-    axios.delete("http://vps-a1b847f6.vps.ovh.net:8080/api/documents/" + id, Config).then(response => {})
+    axios.delete("http://localhost:8000/api/documents/" + id, Config).then(response => {})
   }
 
   handleAlert = (state, value, id) => {

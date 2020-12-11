@@ -170,7 +170,7 @@ class CreateContract extends React.Component {
         Authorization: "Bearer " + localStorage.getItem("token")
       }
     }
-    axios.get("http://vps-a1b847f6.vps.ovh.net:8080/api/users/" + this.props.match.params.id, Config).then(response => {
+    axios.get("http://localhost:8000/api/users/" + this.props.match.params.id, Config).then(response => {
       let rowData = response.data
       let perso = response.data.personal_informations;
       perso =  Object.assign(rowData, perso);
@@ -199,7 +199,7 @@ class CreateContract extends React.Component {
       parameters['user_id'] = userid;
       parameters['values'] = JSON.stringify(input_values);
 
-      axios.post("http://vps-a1b847f6.vps.ovh.net:8080/api/documents", parameters, Config)
+      axios.post("http://localhost:8000/api/documents", parameters, Config)
           .then(function(result) {
               history.push("/app/user/edit/" + userid)
           })

@@ -57,14 +57,14 @@ export const signupWithFirebase = (email, password, name) => {
 
 export const signupWithJWT = (email, password, first_name, last_name) => {
   return dispatch => {
-    axios.post("http://vps-a1b847f6.vps.ovh.net:8080/api/register", {
+    axios.post("http://localhost:8000/api/register", {
         email: email,
         password: password,
         name: first_name + " " + last_name,
       })
       .then(response => {
         axios
-            .post("http://vps-a1b847f6.vps.ovh.net:8080/api/personal_information", {
+            .post("http://localhost:8000/api/personal_information", {
               user_id: 10,
               first_name: first_name,
               last_name: last_name

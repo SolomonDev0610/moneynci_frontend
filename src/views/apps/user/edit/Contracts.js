@@ -23,7 +23,7 @@ import "../../../../assets/scss/plugins/tables/_agGridStyleOverride.scss"
 import "../../../../assets/scss/pages/users.scss"
 import Moment from "react-moment";
 
-class Documents extends React.Component {
+class Contracts extends React.Component {
   state = {
     rowData: null,
     pageSize: 20,
@@ -129,7 +129,7 @@ class Documents extends React.Component {
         Authorization: "Bearer " + localStorage.getItem("token")
       }
     }
-    await axios.get("http://vps-a1b847f6.vps.ovh.net:8080/api/documents/user/" + this.props.id, Config).then(response => {
+    await axios.get("http://localhost:8000/api/documents/user/" + this.props.id, Config).then(response => {
       let rowData = response.data
       this.setState({ rowData })
     })
@@ -141,7 +141,7 @@ class Documents extends React.Component {
         Authorization: "Bearer " + localStorage.getItem("token")
       }
     }
-    axios.delete("http://vps-a1b847f6.vps.ovh.net:8080/api/documents/" + id, Config).then(response => {})
+    axios.delete("http://localhost:8000/api/documents/" + id, Config).then(response => {})
   }
 
   onGridReady = params => {
@@ -477,4 +477,4 @@ class Documents extends React.Component {
     )
   }
 }
-export default Documents
+export default Contracts

@@ -153,7 +153,7 @@ class ConsList extends React.Component {
         Authorization: "Bearer " + localStorage.getItem("token")
       }
     }
-    axios.post("http://vps-a1b847f6.vps.ovh.net:8080/api/documents",{
+    axios.post("http://localhost:8000/api/documents",{
       name: "abc",
       link_to_documents : "N/a",
       type: "contrat",
@@ -178,7 +178,7 @@ class ConsList extends React.Component {
       }
     }
 
-    await axios.get("http://vps-a1b847f6.vps.ovh.net:8080/api/users", Config).then(response => {
+    await axios.get("http://localhost:8000/api/users", Config).then(response => {
       let rowData = response.data
       this.setState({ rowData })
     })
@@ -188,7 +188,7 @@ class ConsList extends React.Component {
       const Config = {
           headers: { Authorization: "Bearer " + localStorage.getItem("token") }
       }
-      axios.delete("http://vps-a1b847f6.vps.ovh.net:8080/api/users/" + id, Config).then(response => {
+      axios.delete("http://localhost:8000/api/users/" + id, Config).then(response => {
           var SelectedData = this.gridApi.getSelectedRows();
           this.gridApi.updateRowData({remove: SelectedData})
       })

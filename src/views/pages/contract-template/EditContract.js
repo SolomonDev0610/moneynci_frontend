@@ -172,7 +172,7 @@ class EditContract extends React.Component {
               Authorization: "Bearer " + localStorage.getItem("token")
           }
       }
-      axios.get("http://vps-a1b847f6.vps.ovh.net:8080/api/get_contract/" + this.props.match.params.id, Config).then(response => {
+      axios.get("http://localhost:8000/api/get_contract/" + this.props.match.params.id, Config).then(response => {
           let rowData = response.data.data
           let perso = response.data.data.personal_informations;
           let userData = response.data.data.user;
@@ -210,7 +210,7 @@ class EditContract extends React.Component {
       parameters['values'] = JSON.stringify(input_values);
       parameters['advanced_payment'] = this.state.formValues['TOTALTTC'];
 
-      axios.put("http://vps-a1b847f6.vps.ovh.net:8080/api/documents/" + this.props.match.params.id, parameters, Config)
+      axios.put("http://localhost:8000/api/documents/" + this.props.match.params.id, parameters, Config)
           .then(function(result) {
               history.push("/app/user/edit/" + userid + "/3")
           })

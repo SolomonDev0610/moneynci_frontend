@@ -49,7 +49,7 @@ class AddService extends React.Component {
         Authorization: "Bearer " + localStorage.getItem("token")
       }
     }
-    axios.post("http://vps-a1b847f6.vps.ovh.net:8080/api/services",  {
+    axios.post("http://localhost:8000/api/services",  {
       name: data.name,
       description: data.description,
       variable: data.variable,

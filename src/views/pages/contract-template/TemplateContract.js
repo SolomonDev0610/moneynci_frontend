@@ -172,7 +172,7 @@ class TemplateContract extends React.Component {
               Authorization: "Bearer " + localStorage.getItem("token")
           }
       }
-      axios.get("http://vps-a1b847f6.vps.ovh.net:8080/api/get_template/1", Config).then(response => {
+      axios.get("http://localhost:8000/api/get_template/1", Config).then(response => {
           if(response.data != null) {
               let values = JSON.parse(response.data.values);
               this.setState(
@@ -196,7 +196,7 @@ class TemplateContract extends React.Component {
       }
       var parameters ={};
       parameters['values'] = JSON.stringify(this.state.formValues);
-      axios.put("http://vps-a1b847f6.vps.ovh.net:8080/api/contract_templates/1", parameters, Config)
+      axios.put("http://localhost:8000/api/contract_templates/1", parameters, Config)
           .then(function(result) {
               toast.success("Template Saved Successfully", {
                   position: toast.POSITION.TOP_CENTER,

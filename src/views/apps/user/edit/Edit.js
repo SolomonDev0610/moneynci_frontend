@@ -17,7 +17,8 @@ import InfoTab from "./Adress"
 import SocialTab from "./Notes"
 import "../../../../assets/scss/pages/users.scss"
 import axios from "axios";
-import Documents from "./Documents";
+import Contracts from "./Contracts";
+import AllDocuments from "./AllDocuments";
 class UserEdit extends React.Component {
   state = {
     rowData: [],
@@ -33,7 +34,7 @@ class UserEdit extends React.Component {
     }
 
     this.setState({ activeTab: this.props.match.params.tab});
-    await axios.get("http://vps-a1b847f6.vps.ovh.net:8080/api/users/" + this.props.match.params.id, Config).then(response => {
+    await axios.get("http://localhost:8000/api/users/" + this.props.match.params.id, Config).then(response => {
       console.log(response.data);
       let rowData = response.data
       let persoData = response.data.personal_informations;
@@ -90,6 +91,19 @@ class UserEdit extends React.Component {
                       }}
                   >
                     <Folder size={16} />
+                    <span className="align-middle ml-50">Contrats</span>
+                  </NavLink>
+                </NavItem>
+                <NavItem>
+                  <NavLink
+                      className={classnames({
+                        active: this.state.activeTab === "4"
+                      })}
+                      onClick={() => {
+                        this.toggle("4")
+                      }}
+                  >
+                    <Folder size={16} />
                     <span className="align-middle ml-50">Documents</span>
                   </NavLink>
                 </NavItem>
@@ -111,7 +125,13 @@ class UserEdit extends React.Component {
                   />
                 </TabPane>
                 <TabPane tabId="3">
-                  <Documents
+                  <Contracts
+                      name={this.state.rowData.name}
+                      id={this.props.match.params.id}
+                  />
+                </TabPane>
+                <TabPane tabId="4">
+                  <AllDocuments
                       name={this.state.rowData.name}
                       id={this.props.match.params.id}
                   />

@@ -145,8 +145,7 @@ class SideMenuContent extends React.Component {
               item.id
             ),
             hover: this.props.hoverIndex === item.id,
-            active:
-              (this.props.activeItemState === item.navLink &&
+            active:(this.props.activeItemState.includes("app/user") && item.navLink.includes("app/user")) || (this.props.activeItemState === item.navLink &&
                 item.type === "item") ||
               (item.parentOf &&
                 item.parentOf.includes(this.props.activeItemState)),

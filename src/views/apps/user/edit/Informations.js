@@ -1,37 +1,38 @@
 import React from "react"
 import {
-  Row,
-  Col,
-  Button,
-  Form,
-  Input,
-  Label,
-  FormGroup, CustomInput,
+    Row,
+    Col,
+    Button,
+    Form,
+    Input,
+    Label,
+    FormGroup, CustomInput, CardBody,
 } from "reactstrap"
 import Flatpickr from "react-flatpickr";
 import { User, MapPin } from "react-feather"
 import "flatpickr/dist/themes/light.css";
 import "../../../../assets/scss/plugins/forms/flatpickr/flatpickr.scss"
-
+import InputMaskDate from "./InputMaskDate"
 //import { updateUsersInformation } from "../../../../redux/actions/form/informationsFormActions"
 import axios from "axios";
 import moment from "moment"
 import {toast} from "react-toastify";
 import {history} from "../../../../history";
+import Radio from "../../../../components/@vuexy/radio/RadioVuexy";
 
 class UserAccountTab extends React.Component {
   state = {
     dob: this.props.perso["birth_date"],
     username: this.props.data.username,
     p_password: this.props.data.p_password,
-    status: this.props.perso.status,
+    civility: this.props.perso.civility ? this.props.perso.civility : "Monsieur",
     first_name: this.props.perso.first_name,
     last_name: this.props.perso.last_name,
     role: this.props.data.role,
     email: this.props.data.email,
     contact_number: this.props.perso.contact_number,
     office_number: this.props.perso.office_number,
-    martial_status: this.props.perso.martial_status,
+    martial_status: this.props.perso.martial_status ? this.props.perso.martial_status : "Célibataire",
     children_number: this.props.perso.children_number,
 
       personal_address: this.props.perso.personal_address,
@@ -47,15 +48,14 @@ class UserAccountTab extends React.Component {
   }
 
   updateUsersInformation = information => {
-
     const Config = {
       headers: {
         Authorization: "Bearer " + localStorage.getItem("token")
       }
     }
-    // console.log(localStorage.getItem("token"))
+    console.log(localStorage.getItem("token"))
     axios
-        .put("http://vps-a1b847f6.vps.ovh.net:8080/api/users/" + this.props.id, {
+        .put("http://localhost:8000/api/users/" + this.props.id, {
           name: information.username,
           email: information.email,
           role: information.role,
@@ -63,8 +63,8 @@ class UserAccountTab extends React.Component {
         }, Config)
         .then(response => {
           axios
-              .put("http://vps-a1b847f6.vps.ovh.net:8080/api/personal_information/" + this.props.id,{
-                civility: information.status,
+              .put("http://localhost:8000/api/personal_information/" + this.props.id,{
+                civility: information.civility,
                 first_name: information.first_name,
                 last_name: information.last_name,
                 birth_date: information.dob,
@@ -109,42 +109,132 @@ class UserAccountTab extends React.Component {
 
   ifExist(name)
   {
-    if (this.props.perso)
-      return this.props.perso[name];
-    else
-      return "";
+    if (this.props.perso) {
+        return this.props.perso[name];
+    }else
+        return "";
   }
 
   ifDataExist(name)
   {
-    if (this.props.data)
-      return this.props.data[name];
-    else
+    if (this.props.data) {
+        return this.props.data[name];
+    }else
       return "";
   }
 
   handledob = date => {
-    var test = new Date(date[0])
-    //var MyDateString = ('0' + test.getDate()).slice(-2) + '/'
-    //    + ('0' + (test.getMonth()+1)).slice(-2) + '/'
-     //   + test.getFullYear();
-    var MyDateString = test.getFullYear() + "-" + ('0' + (test.getMonth()+1)).slice(-2) + "-" + ('0' + test.getDate()).slice(-2)
-    this.setState({
-      dob: MyDateString
-    })
+    var lstDate = date.split("/");
+    // var MyDateString = test.getFullYear() + "-" + ('0' + (test.getMonth()+1)).slice(-2) + "-" + ('0' + test.getDate()).slice(-2)
+      if(lstDate.length == 3) {
+          var MyDateString = lstDate[2] + "-" + lstDate[1] + "-" + lstDate[0];
+          this.setState({
+              dob: MyDateString
+          })
+      }
   }
-
   updateData = e => {
     e.preventDefault();
     this.updateUsersInformation(this.state);
   }
-
   render() {
     return (
       <Row>
         <Col sm="12">
           <Form onSubmit={this.updateData}>
             <Row>
+                <Col md="6" sm="12">
+                    <FormGroup style={{marginBottom:'15px'}}>
+                        <div for="civility" style={{marginTop:'10px',marginBottom:'5px'}}>Civilité</div>
+                        {this.props.perso['civility'] != null &&
+                         <>
+                            <div className="d-inline-block mr-1">
+                                <Radio
+                                    label="Monsieur"
+                                    color="primary"
+                                    defaultChecked={this.props.perso['civility'] == 'Monsieur'? true: false}
+                                    name="civility"
+                                    onChange={() => this.setState({civility: "Monsieur"})}
+                                />
+                            </div>
+                            <div className="d-inline-block mr-1">
+                                <Radio
+                                    label="Madame"
+                                    color="success"
+                                    defaultChecked={this.props.perso['civility'] == "Madame"? true: false}
+                                    name="civility"
+                                    onChange={() => this.setState({civility: "Madame"})}
+                                />
+                            </div>
+                            <div className="d-inline-block mr-1">
+                                <Radio
+                                    label="Mlle"
+                                    color="info"
+                                    defaultChecked={this.props.perso['civility'] == "Mlle"? true: false}
+                                    name="civility"
+                                    onChange={() => this.setState({civility: "Mlle"})}
+                                />
+                            </div>
+                        </>
+                        }
+                        {this.props.perso['civility'] == null &&
+                        <>
+                            <div className="d-inline-block mr-1">
+                                <Radio
+                                    label="Monsieur"
+                                    color="primary"
+                                    defaultChecked={true}
+                                    name="civility"
+                                    onChange={() => this.setState({civility: "Monsieur"})}
+                                />
+                            </div>
+                            <div className="d-inline-block mr-1">
+                                <Radio
+                                    label="Madame"
+                                    color="success"
+                                    defaultChecked={false}
+                                    name="civility"
+                                    onChange={() => this.setState({civility: "Madame"})}
+                                />
+                            </div>
+                            <div className="d-inline-block mr-1">
+                                <Radio
+                                    label="Mlle"
+                                    color="info"
+                                    defaultChecked={false}
+                                    name="civility"
+                                    onChange={() => this.setState({civility: "Mlle"})}
+                                />
+                            </div>
+                        </>
+                        }
+                    </FormGroup>
+                </Col>
+                <Col md="6" sm="12"></Col>
+                <Col md="6" sm="12">
+                    <FormGroup>
+                        <Label for="name">Nom</Label>
+                        <Input
+                            type="text"
+                            defaultValue={this.ifExist("last_name")}
+                            onChange={e => this.setState({ last_name: e.target.value })}
+                            id="name"
+                            placeholder="Name"
+                        />
+                    </FormGroup>
+                </Col>
+                <Col md="6" sm="12">
+                    <FormGroup style={{marginBottom:'15px'}}>
+                        <Label for="p_password">Password</Label>
+                        <Input
+                            type="text"
+                            defaultValue={this.ifDataExist('p_password')}
+                            onChange={e => this.setState({ p_password: e.target.value })}
+                            id="p_password"
+                            placeholder="Password"
+                        />
+                    </FormGroup>
+                </Col>
                 <Col md="6" sm="12">
                     <FormGroup>
                         <Label for="name">Prénom</Label>
@@ -159,30 +249,6 @@ class UserAccountTab extends React.Component {
                 </Col>
                 <Col md="6" sm="12">
                     <FormGroup>
-                        <Label for="name">Nom</Label>
-                        <Input
-                            type="text"
-                            defaultValue={this.ifExist("last_name")}
-                            onChange={e => this.setState({ last_name: e.target.value })}
-                            id="name"
-                            placeholder="Name"
-                        />
-                    </FormGroup>
-                </Col>
-                <Col md="6" sm="12">
-                    <FormGroup>
-                        <Label for="p_password">Password</Label>
-                        <Input
-                            type="text"
-                            defaultValue={this.ifDataExist('p_password')}
-                            onChange={e => this.setState({ p_password: e.target.value })}
-                            id="p_password"
-                            placeholder="Password"
-                        />
-                    </FormGroup>
-                </Col>
-                <Col md="6" sm="12">
-                    <FormGroup>
                         <Label for="role">Role</Label>
                         <CustomInput type="select" name="select" id="role" onChange={e => this.setState({ role: e.target.value })}>
                             <option>{this.ifDataExist('role')}</option>
@@ -191,43 +257,202 @@ class UserAccountTab extends React.Component {
                         </CustomInput>
                     </FormGroup>
                 </Col>
-              <Col md="6" sm="12">
-                <FormGroup>
-                  <Label for="status">Civilité</Label>
-                  <Input
-                      type="txt"
-                      name="status"
-                      defaultValue={this.ifExist("civility")}
-                      onChange={e => this.setState({ status: e.target.value })}
-                      id="status">
-                  </Input>
-                </FormGroup>
-              </Col>
-
-
-              <Col md="6" sm="12">
-                <FormGroup>
-                  <Label for="email">Email</Label>
-                  <Input
-                    type="text"
-                    defaultValue={this.ifDataExist('email')}
-                    onChange={e => this.setState({ email: e.target.value })}
-                    id="email"
-                    placeholder="Email"
-                  />
-                </FormGroup>
-              </Col>
                 <Col md="6" sm="12">
                     <FormGroup>
-                        <Label for="martiel_status">Status Marital</Label>
-                        <CustomInput type="select" name="select" id="martiel_status" onChange={e => this.setState({ martial_status: e.target.value })}>
-                            <option>{this.ifExist("martial_status")}</option>
-                            <option>Célibataire</option>
-                            <option>Pacsé</option>
-                            <option>Marié</option>
-                            <option>Veuf</option>
-                            <option>Divorcé</option>
-                        </CustomInput>
+                        <Label className="d-block" for="dob">
+                            Date de naissance
+                        </Label>
+                        {this.props.perso["birth_date"] != null &&
+                            <InputMaskDate
+                                defaultValue={this.props.perso["birth_date"]}
+                                onChange={e => this.handledob(e.target.value)}
+                            />
+                        }
+                        {this.props.perso["birth_date"] == null &&
+                            <InputMaskDate
+                                onChange={e => this.handledob(e.target.value)}
+                            />
+                        }
+                    </FormGroup>
+                </Col>
+                <Col md="6" sm="12">
+                    <FormGroup>
+                        <Label for="child_nbr">Nom Société</Label>
+                        <Input
+                            type="text"
+                            id="society_name"
+                            placeholder="Nom Société"
+                            defaultValue={this.ifExist("society_name")}
+                            onChange={e => this.setState({ society_name: e.target.value })}
+                        />
+                    </FormGroup>
+                </Col>
+                <Col md="6" sm="12">
+                    <FormGroup style={{marginBottom:'15px',marginTop:'5px'}}>
+                        {this.props.perso['martial_status'] != null &&
+                        <>
+                            <div className="d-inline-block mr-1">
+                                <Radio
+                                    label="Célibataire"
+                                    color="primary"
+                                    defaultChecked={this.props.perso['martial_status'] == 'Célibataire'? true: false}
+                                    name="martial_status"
+                                    onChange={() => this.setState({martial_status: "Célibataire"})}
+                                />
+                            </div>
+                            <div className="d-inline-block mr-1">
+                                <Radio
+                                    label="Pacsé"
+                                    color="success"
+                                    defaultChecked={this.props.perso['martial_status'] == "Pacsé"? true: false}
+                                    name="martial_status"
+                                    onChange={() => this.setState({martial_status: "Pacsé"})}
+                                />
+                            </div>
+                            <div className="d-inline-block mr-1">
+                                <Radio
+                                    label="Marié"
+                                    color="info"
+                                    defaultChecked={this.props.perso['martial_status'] == "Marié"? true: false}
+                                    name="martial_status"
+                                    onChange={() => this.setState({martial_status: "Marié"})}
+                                />
+                            </div>
+                            <div className="d-inline-block mr-1">
+                                <Radio
+                                    label="Veuf"
+                                    color="warning"
+                                    defaultChecked={this.props.perso['martial_status'] == "Veuf"? true: false}
+                                    name="martial_status"
+                                    onChange={() => this.setState({martial_status: "Veuf"})}
+                                />
+                            </div>
+                            <div className="d-inline-block mr-1">
+                                <Radio
+                                    label="Divorcé"
+                                    color="danger"
+                                    defaultChecked={this.props.perso['martial_status'] == "Divorcé"? true: false}
+                                    name="martial_status"
+                                    onChange={() => this.setState({martial_status: "Divorcé"})}
+                                />
+                            </div>
+                        </>
+                        }
+                        {this.props.perso['martial_status'] == null &&
+                        <>
+                            <div className="d-inline-block mr-1">
+                                <Radio
+                                    label="Célibataire"
+                                    color="primary"
+                                    defaultChecked={true}
+                                    name="martial_status"
+                                    onChange={() => this.setState({martial_status: "Célibataire"})}
+                                />
+                            </div>
+                            <div className="d-inline-block mr-1">
+                                <Radio
+                                    label="Pacsé"
+                                    color="success"
+                                    defaultChecked={false}
+                                    name="martial_status"
+                                    onChange={() => this.setState({martial_status: "Pacsé"})}
+                                />
+                            </div>
+                            <div className="d-inline-block mr-1">
+                                <Radio
+                                    label="Marié"
+                                    color="info"
+                                    defaultChecked={false}
+                                    name="martial_status"
+                                    onChange={() => this.setState({martial_status: "Marié"})}
+                                />
+                            </div>
+                            <div className="d-inline-block mr-1">
+                                <Radio
+                                    label="Veuf"
+                                    color="warning"
+                                    defaultChecked={false}
+                                    name="martial_status"
+                                    onChange={() => this.setState({martial_status: "Veuf"})}
+                                />
+                            </div>
+                            <div className="d-inline-block mr-1">
+                                <Radio
+                                    label="Divorcé"
+                                    color="danger"
+                                    defaultChecked={false}
+                                    name="martial_status"
+                                    onChange={() => this.setState({martial_status: "Divorcé"})}
+                                />
+                            </div>
+                        </>
+                        }
+                    </FormGroup>
+                </Col>
+                <Col md="6" sm="12">
+                    <FormGroup style={{marginBottom:'15px',marginTop:'5px'}}>
+                        {this.props.perso['military_service'] != null &&
+                        <>
+                            <div className="d-inline-block mr-1">
+                                <Radio
+                                    label="Service militaire"
+                                    color="primary"
+                                    defaultChecked={this.props.perso['military_service'] == 'Service militaire'? true: false}
+                                    name="military_service"
+                                    onChange={() => this.setState({military_service: "Service militaire"})}
+                                />
+                            </div>
+                            <div className="d-inline-block mr-1">
+                                <Radio
+                                    label="oui"
+                                    color="success"
+                                    defaultChecked={this.props.perso['military_service'] == "oui"? true: false}
+                                    name="military_service"
+                                    onChange={() => this.setState({military_service: "oui"})}
+                                />
+                            </div>
+                            <div className="d-inline-block mr-1">
+                                <Radio
+                                    label="non"
+                                    color="info"
+                                    defaultChecked={this.props.perso['military_service'] == "non"? true: false}
+                                    name="military_service"
+                                    onChange={() => this.setState({military_service: "non"})}
+                                />
+                            </div>
+                        </>
+                        }
+                        {this.props.perso['military_service'] == null &&
+                        <>
+                            <div className="d-inline-block mr-1">
+                                <Radio
+                                    label="Service militaire"
+                                    color="primary"
+                                    defaultChecked={true}
+                                    name="military_service"
+                                    onChange={() => this.setState({military_service: "Service militaire"})}
+                                />
+                            </div>
+                            <div className="d-inline-block mr-1">
+                                <Radio
+                                    label="oui"
+                                    color="success"
+                                    defaultChecked={false}
+                                    name="military_service"
+                                    onChange={() => this.setState({military_service: "oui"})}
+                                />
+                            </div>
+                            <div className="d-inline-block mr-1">
+                                <Radio
+                                    label="non"
+                                    color="info"
+                                    defaultChecked={false}
+                                    name="military_service"
+                                    onChange={() => this.setState({military_service: "non"})}
+                                />
+                            </div>
+                        </>
+                        }
                     </FormGroup>
                 </Col>
                 <Col md="6" sm="12">
@@ -244,72 +469,40 @@ class UserAccountTab extends React.Component {
                 </Col>
                 <Col md="6" sm="12">
                     <FormGroup>
-                        <Label className="d-block" for="dob">
-                            Date de naissance
-                        </Label>
-                        <Flatpickr
-                            id="dob"
-                            className="form-control"
-                            options={{ dateFormat: "d/m/Y" }}
-                            placeholder={this.props.perso["birth_date"]}
-                            defaultValue={this.props.perso["birth_date"]}
-                            onChange={date => this.handledob(date)}
-                        />
-                    </FormGroup>
-                </Col>
-              <Col md="6" sm="12">
-                <FormGroup>
-                  <Label for="contactnumber">Contact Number</Label>
-                  <Input
-                    type="text"
-                    id="contactnumber"
-                    placeholder="Contact Number"
-                    defaultValue={this.ifExist("mobile_number")}
-                    onChange={e => this.setState({ contact_number: e.target.value })}
-                  />
-                </FormGroup>
-              </Col>
-
-              <Col md="6" sm="12">
-                <FormGroup>
-                  <Label for="child_nbr">Nombre d'enfants</Label>
-                  <Input
-                      type="number"
-                      id="child_nbr"
-                      placeholder="Nombre d'enfants"
-                      defaultValue={this.ifExist("children_number")}
-                      onChange={e => this.setState({ children_number: e.target.value })}
-                  />
-                </FormGroup>
-              </Col>
-
-                <Col md="6" sm="12">
-                    <FormGroup>
-                        <Label for="child_nbr">Service militaire</Label>
-                        <CustomInput type="select" name="military_service" id="military_service"
-                                     value={this.ifExist("military_service")}
-                                     onChange={e => this.setState({ military_service: e.target.value })}>
-                            <option value="Service militaire">Service militaire</option>
-                            <option value="oui">oui</option>
-                            <option value="non">non</option>
-                        </CustomInput>
-                    </FormGroup>
-                </Col>
-                <Col md="6" sm="12">
-                    <FormGroup>
-                        <Label for="child_nbr">Nom Société</Label>
+                        <Label for="contactnumber">Contact Number</Label>
                         <Input
                             type="text"
-                            id="society_name"
-                            placeholder="Nom Société"
-                            defaultValue={this.ifExist("society_name")}
-                            onChange={e => this.setState({ society_name: e.target.value })}
+                            id="contactnumber"
+                            placeholder="Contact Number"
+                            defaultValue={this.ifExist("mobile_number")}
+                            onChange={e => this.setState({ contact_number: e.target.value })}
                         />
                     </FormGroup>
                 </Col>
                 <Col md="6" sm="12">
+                    <FormGroup>
+                        <Label for="child_nbr">Nombre d'enfants</Label>
+                        <Input
+                            type="number"
+                            id="child_nbr"
+                            placeholder="Nombre d'enfants"
+                            defaultValue={this.ifExist("children_number")}
+                            onChange={e => this.setState({ children_number: e.target.value })}
+                        />
+                    </FormGroup>
                 </Col>
-
+                <Col md="6" sm="12">
+                    <FormGroup>
+                        <Label for="email">Email</Label>
+                        <Input
+                            type="text"
+                            defaultValue={this.ifDataExist('email')}
+                            onChange={e => this.setState({ email: e.target.value })}
+                            id="email"
+                            placeholder="Email"
+                        />
+                    </FormGroup>
+                </Col>
                 <Col className="mt-1" md="6" sm="12">
                     <h5 className="mb-1">
                         <User className="mr-50" size={16} />

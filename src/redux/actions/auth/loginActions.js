@@ -187,7 +187,7 @@ export const loginWithGithub = () => {
 export const loginWithJWT = user => {
   return dispatch => {
     axios
-      .post("http://vps-a1b847f6.vps.ovh.net:8080/api/login", {
+      .post("http://localhost:8000/api/login", {
         email: user.email,
         password: user.password
       })

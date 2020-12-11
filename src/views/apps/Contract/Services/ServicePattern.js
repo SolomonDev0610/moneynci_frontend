@@ -140,7 +140,7 @@ class ServicePattern extends React.Component {
       }
     }
 
-    await axios.get("http://vps-a1b847f6.vps.ovh.net:8080/api/services/template", Config).then(response => {
+    await axios.get("http://localhost:8000/api/services/template", Config).then(response => {
       let bufferRowData = response.data
       let rowData = []
 
@@ -164,7 +164,7 @@ class ServicePattern extends React.Component {
         Authorization: "Bearer " + localStorage.getItem("token")
       }
     }
-    axios.delete("http://vps-a1b847f6.vps.ovh.net:8080/api/services/" + id, Config).then(response => {})
+    axios.delete("http://localhost:8000/api/services/" + id, Config).then(response => {})
   }
 
   onGridReady = params => {
@@ -179,7 +179,7 @@ class ServicePattern extends React.Component {
       }
     }
     console.log(params)
-    axios.put("http://vps-a1b847f6.vps.ovh.net:8080/api/services/" + params.data.id,  {
+    axios.put("http://localhost:8000/api/services/" + params.data.id,  {
       name: params.data.name,
       description: params.data.description,
       variable: params.data.variable,
