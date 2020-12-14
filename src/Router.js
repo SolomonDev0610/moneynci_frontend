@@ -124,7 +124,7 @@ const ReactTables = lazy(() =>
 )
 const Aggrid = lazy(() => import("./views/tables/aggrid/Aggrid"))
 const DataTable = lazy(() => import("./views/tables/data-tables/DataTables"))
-const profile = lazy(() => import("./views/pages/profile/Profile"))
+// const profile = lazy(() => import("./views/pages/profile/Profile"))
 const faq = lazy(() => import("./views/pages/faq/FAQ"))
 const knowledgeBase = lazy(() =>
   import("./views/pages/knowledge-base/KnowledgeBase")
@@ -166,27 +166,32 @@ const Export = lazy(() => import("./extensions/import-export/Export"))
 const ExportSelected = lazy(() =>
   import("./extensions/import-export/ExportSelected")
 )
-const userList = lazy(() => import("./views/apps/user/list/List"))
+//-------- current active -----------------
+const profile = lazy(() => import("./views/apps/profile"))
+
+const task = lazy(() => import("./views/apps/task/Task"))
+
+const document = lazy(() => import("./views/apps/document"))
+
 const ConsList = lazy(() => import("./views/apps/user/list/ConsList"))
-const AdmUserList = lazy(() => import("./views/apps/user/list/usersList"))
-const AllDocuments = lazy(() => import("./views/apps/user/edit/AllDocuments"))
-const TemplateContract = lazy(() => import("./views/pages/contract-template/TemplateContract"))
 const createUser = lazy(() => import("./views/apps/user/add/addUser"))
+const userEdit = lazy(() => import("./views/apps/user/edit/Edit"))
+const AllContracts = lazy(() => import("./views/apps/user/edit/AllContracts"))
+
+const TemplateContract = lazy(() => import("./views/pages/contract-template/TemplateContract"))
+
+const Login = lazy(() => import("./views/pages/authentication/login/Login"))
+const forgotPassword = lazy(() => import("./views/pages/authentication/ForgotPassword"))
+const lockScreen = lazy(() => import("./views/pages/authentication/LockScreen"))
+const resetPassword = lazy(() => import("./views/pages/authentication/ResetPassword"))
+const register = lazy(() => import("./views/pages/authentication/register/Register"))
+
+//-----------------------------------
+const AdmUserList = lazy(() => import("./views/apps/user/list/usersList"))
+const userList = lazy(() => import("./views/apps/user/list/List"))
+const userView = lazy(() => import("./views/apps/user/view/View"))
 const createService = lazy(() => import("./views/apps/Contract/Services/addService"))
 const createSubService = lazy(() => import("./views/apps/Contract/Services/addSubService"))
-const userEdit = lazy(() => import("./views/apps/user/edit/Edit"))
-const userView = lazy(() => import("./views/apps/user/view/View"))
-const Login = lazy(() => import("./views/pages/authentication/login/Login"))
-const forgotPassword = lazy(() =>
-  import("./views/pages/authentication/ForgotPassword")
-)
-const lockScreen = lazy(() => import("./views/pages/authentication/LockScreen"))
-const resetPassword = lazy(() =>
-  import("./views/pages/authentication/ResetPassword")
-)
-const register = lazy(() =>
-  import("./views/pages/authentication/register/Register")
-)
 const accessControl = lazy(() =>
   import("./extensions/access-control/AccessControl")
 )
@@ -389,14 +394,23 @@ class AppRouter extends React.Component {
           <AppRoute path="/app/ServicePattern" component={ServicePattern} />
           <AppRoute path="/app/SubServicePattern/:id" component={SubServicePattern} />
           <AppRoute path="/app/user/createSubService/:id" component={createSubService} />
+
+          <AppRoute path="/app/profile" component={profile} />
+
+          <AppRoute path="/task" exact component={() => <Redirect to="/task/all" />}/>
+          <AppRoute path="/task/:filter" component={task} />
+
+          <AppRoute path="/document" component={document} />
+
           <AppRoute path="/app/user/conslist" component={ConsList} />
           <AppRoute path="/app/user/userlist" component={AdmUserList} />
           <AppRoute path="/app/contract/handleServices/:id" component={handleServices} />
           <AppRoute path="/app/user/createUser" component={createUser} />
           <AppRoute path="/app/user/createService" component={createService} />
-          <AppRoute path="/app/AllDocuments" component={AllDocuments} />
+          <AppRoute path="/app/AllContracts" component={AllContracts} />
           <AppRoute path="/app/contractTemplate" component={TemplateContract} />
           <AppRoute path="/app/user/edit/:id/:tab" component={userEdit} />
+
           <AppRoute path="/app/user/view" component={userView} />
           <AppRoute path="/charts/apex" component={apex} />
           <AppRoute path="/charts/chartjs" component={chartjs} />

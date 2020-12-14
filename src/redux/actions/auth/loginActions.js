@@ -187,7 +187,7 @@ export const loginWithGithub = () => {
 export const loginWithJWT = user => {
   return dispatch => {
     axios
-      .post("http://localhost:8000/api/login", {
+      .post(global.config.server_url + "/login", {
         email: user.email,
         password: user.password
       })
@@ -196,6 +196,8 @@ export const loginWithJWT = user => {
         if (response.data && !response.data.error) {
           loggedInUser = response.data.user
 
+          localStorage.setItem("userid", loggedInUser.id);
+          localStorage.setItem("role", loggedInUser.role);
           localStorage.setItem("token", response.data.accessToken)
 
           dispatch({
@@ -203,7 +205,7 @@ export const loginWithJWT = user => {
             payload: { loggedInUser, loggedInWith: "jwt"}
           })
           dispatch({type: "CHANGE_ROLE", userRole: response.data.user.role})
-          history.push("/")
+          history.push("/app/profile")
         }
       })
       .catch(error => {

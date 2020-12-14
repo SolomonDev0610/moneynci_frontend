@@ -18,7 +18,7 @@ import SocialTab from "./Notes"
 import "../../../../assets/scss/pages/users.scss"
 import axios from "axios";
 import Contracts from "./Contracts";
-import AllDocuments from "./AllDocuments";
+import Documents from "./Documents";
 class UserEdit extends React.Component {
   state = {
     rowData: [],
@@ -34,7 +34,7 @@ class UserEdit extends React.Component {
     }
 
     this.setState({ activeTab: this.props.match.params.tab});
-    await axios.get("http://localhost:8000/api/users/" + this.props.match.params.id, Config).then(response => {
+    await axios.get(global.config.server_url + "/users/" + this.props.match.params.id, Config).then(response => {
       console.log(response.data);
       let rowData = response.data
       let persoData = response.data.personal_informations;
@@ -131,7 +131,7 @@ class UserEdit extends React.Component {
                   />
                 </TabPane>
                 <TabPane tabId="4">
-                  <AllDocuments
+                  <Documents
                       name={this.state.rowData.name}
                       id={this.props.match.params.id}
                   />

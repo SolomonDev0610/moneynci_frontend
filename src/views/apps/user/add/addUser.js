@@ -8,7 +8,7 @@ import {
   Card,
   CardBody,
   CardTitle,
-  CardHeader, Button, Form,
+  CardHeader, Button, Form, Label,
   // Button
 } from "reactstrap"
 import {history} from "../../../../history";
@@ -21,7 +21,8 @@ import Flatpickr from "react-flatpickr";
 import "flatpickr/dist/themes/light.css";
 import "../../../../assets/scss/plugins/forms/flatpickr/flatpickr.scss"
 import InputMaskDate from "../edit/InputMaskDate";
-
+import {MapPin, User} from "react-feather";
+import Radio from "../../../../components/@vuexy/radio/RadioVuexy";
 
 toast.configure(); // required to work with toast
 var generator = require('generate-password');
@@ -37,13 +38,14 @@ class AddUser extends React.Component {
       first_name: null,
       society_related: "Moneynci",
       email: null,
+      role:"Client EOR",
       password: generator.generate({length: 10, numbers: true}),
       civility: "Monsieur",
       martial_status: "Célibataire",
       children_number: null,
       mobile_number: null,
       office_number: null,
-      military_service: null,
+      military_service: 'Service militaire',
       birth_date: null,
       personal_address: null,
       personal_address_2: null,
@@ -63,20 +65,21 @@ class AddUser extends React.Component {
     this.setState({ Alert : value })
     if (value === false)
       history.push("/app/user/conslist")
-
   }
 
-  sendForm = (data) => {
-    axios.post("http://localhost:8000/api/register", {
+  sendForm = (data, type) => {
+    axios.post(global.config.server_url + "/register", {
       email: data.email,
       password: data.password,
-      name: data.first_name + " " + data.last_name
+      name: data.first_name + " " + data.last_name,
+      role: data.role,
+      parent_id:localStorage.getItem("userid")
     })
         .then(function(result) {
           console.log(result)
           if (result.data.accessToken) {
             axios
-                .post("http://localhost:8000/api/personal_information", {
+                .post(global.config.server_url + "/personal_information", {
                   user_id: 10,
                   last_name: data.last_name,
                   maiden_name: data.maiden_name,
@@ -101,8 +104,12 @@ class AddUser extends React.Component {
                   society_city: data.society_city,
                   society_country: data.society_country,
                   notes: data.notes,
+                  parent_id:localStorage.getItem("userid")
                 })
                 .then(response => {
+                  if(type == 1){
+                      history.push("/pages/create-contract/" +response.data.user_id )
+                  }
                 })
                 .catch(error => {
                   console.log(error);
@@ -127,14 +134,13 @@ class AddUser extends React.Component {
         this.setState({ data: { ...this.state.data, birth_date: MyDateString} })
     }
 
-  handleSubmit = e => {
-    e.preventDefault()
-    this.sendForm(this.state.data)
-    this.handleAlert(true)
+  handleSubmit = (type) => {
+    this.sendForm(this.state.data, type)
+    if(type == 0)
+      this.handleAlert(true)
   }
   render() {
     return (
-      <Form action="/" onSubmit={this.handleSubmit}>
       <Card>
         <CardHeader>
           <CardTitle>Création client</CardTitle>
@@ -148,49 +154,45 @@ class AddUser extends React.Component {
         <CardBody>
           <Row>
             <Col md="6" sm="12">
+              <FormGroup style={{marginBottom:'15px'}}>
+                <div className="d-inline-block mr-1">
+                  <Radio
+                      label="Monsieur"
+                      color="primary"
+                      defaultChecked={true}
+                      name="civility"
+                      onChange={() => this.setState({ data: { ...this.state.data, civility: "Monsieur"}})}
+                  />
+                </div>
+                <div className="d-inline-block mr-1">
+                  <Radio
+                      label="Madame"
+                      color="success"
+                      defaultChecked={false}
+                      name="civility"
+                      onChange={() => this.setState({ data: { ...this.state.data, civility: "Madame"}})}
+                  />
+                </div>
+                <div className="d-inline-block mr-1">
+                <Radio
+                    label="Mlle"
+                    color="info"
+                    defaultChecked={false}
+                    name="civility"
+                    onChange={() => this.setState({ data: { ...this.state.data, civility: "Mlle"}})}
+                />
+              </div>
+              </FormGroup>
+            </Col>
+            <Col md="6" sm="12">
+            </Col>
+            <Col md="6" sm="12">
               <FormGroup>
                 <Input
                     type="text" placeholder="Nom"
                     required
                     value={this.state.data.last_name}
                     onChange={e => this.setState({ data: { ...this.state.data, last_name: e.target.value} })}
-                />
-              </FormGroup>
-            </Col>
-            <Col md="6" sm="12">
-              <FormGroup>
-                <Input
-                    type="text" placeholder="Nom de jeune fille"
-                    onChange={e => this.setState({ data: { ...this.state.data, maiden_name: e.target.value} })}
-                />
-              </FormGroup>
-            </Col>
-            <Col md="6" sm="12">
-              <FormGroup>
-                <Input
-                    type="text" placeholder="Prénom"
-                    required
-                    onChange={e => this.setState({ data: { ...this.state.data, first_name: e.target.value} })}
-                />
-              </FormGroup>
-            </Col>
-            <Col md="6" sm="12">
-              <FormGroup>
-                <CustomInput type="select" name="select" id="city" onChange={e => this.setState({ data: { ...this.state.data, society_related: e.target.value} })}>
-                  <option>EOR</option>
-                  <option>Moneynci</option>
-                  <option>Les deux</option>
-                </CustomInput>
-              </FormGroup>
-            </Col>
-            <Col md="6" sm="12">
-              <FormGroup>
-                <Input
-                    type="email"
-                    placeholder="Email"
-                    required
-                    value={this.state.data.email}
-                    onChange={e => this.setState({ data: { ...this.state.data, email: e.target.value} })}
                 />
               </FormGroup>
             </Col>
@@ -205,27 +207,138 @@ class AddUser extends React.Component {
                 />
               </FormGroup>
             </Col>
-          </Row>
-          <Row>
             <Col md="6" sm="12">
               <FormGroup>
-                <CustomInput type="select" name="select" id="status" onChange={e => this.setState({ data: { ...this.state.data, civility: e.target.value} })}>
-                  <option>Monsieur</option>
-                  <option>Madame</option>
-                  <option>Docteur</option>
-                  <option>Maître</option>
+                <Input
+                    type="text" placeholder="Prénom"
+                    required
+                    onChange={e => this.setState({ data: { ...this.state.data, first_name: e.target.value} })}
+                />
+              </FormGroup>
+            </Col>
+            <Col md="6" sm="12">
+              <FormGroup>
+                <CustomInput type="select" name="role" required id="role" onChange={e => this.setState({ data: { ...this.state.data, role: e.target.value} })}>
+                  <option>Client EOR</option>
+                  <option>Client MAXO</option>
+                  <option>Consultant EOR</option>
+                  <option>Consultant MAXO</option>
+                  <option>Technician EOR</option>
+                  <option>Technician MAXO</option>
+                  <option>Admin</option>
                 </CustomInput>
               </FormGroup>
             </Col>
             <Col md="6" sm="12">
               <FormGroup>
-                <CustomInput type="select" name="select" id="status" onChange={e => this.setState({ data: { ...this.state.data, martial_status: e.target.value} })}>
-                  <option>Célibataire</option>
-                  <option>Pacsé</option>
-                  <option>Marié</option>
-                  <option>Veuf</option>
-                  <option>Divorcé</option>
-                </CustomInput>
+                <InputMaskDate
+                    onChange={e => this.handledob(e.target.value)}
+                />
+              </FormGroup>
+            </Col>
+            <Col md="6" sm="12">
+              <FormGroup>
+                <Input
+                    type="text" placeholder="Nom Société"
+                    onChange={e => this.setState({ data: { ...this.state.data, society_name: e.target.value} })}
+                />
+              </FormGroup>
+            </Col>
+            <Col md="6" sm="12">
+              <FormGroup style={{marginBottom:'15px',marginTop:'5px'}}>
+
+                  <div className="d-inline-block mr-1">
+                    <Radio
+                        label="Célibataire"
+                        color="primary"
+                        defaultChecked={true}
+                        name="martial_status"
+                        onChange={() => this.setState({ data: { ...this.state.data, martial_status: "Célibataire"}})}
+                    />
+                  </div>
+                  <div className="d-inline-block mr-1">
+                    <Radio
+                        label="Pacsé"
+                        color="success"
+                        defaultChecked={false}
+                        name="martial_status"
+                        onChange={() => this.setState({ data: { ...this.state.data, martial_status: "Pacsé"}})}
+                    />
+                  </div>
+                  <div className="d-inline-block mr-1">
+                    <Radio
+                        label="Marié"
+                        color="info"
+                        defaultChecked={false}
+                        name="martial_status"
+                        onChange={() => this.setState({ data: { ...this.state.data, martial_status: "Marié"}})}
+                    />
+                  </div>
+                  <div className="d-inline-block mr-1">
+                    <Radio
+                        label="Veuf"
+                        color="warning"
+                        defaultChecked={false}
+                        name="martial_status"
+                        onChange={() => this.setState({ data: { ...this.state.data, martial_status: "Veuf"}})}
+                    />
+                  </div>
+                  <div className="d-inline-block mr-1">
+                    <Radio
+                        label="Divorcé"
+                        color="danger"
+                        defaultChecked={false}
+                        name="martial_status"
+                        onChange={() => this.setState({ data: { ...this.state.data, martial_status: "Divorcé"}})}
+                    />
+                  </div>
+              </FormGroup>
+            </Col>
+            <Col md="6" sm="12">
+              <FormGroup style={{marginBottom:'15px',marginTop:'5px'}}>
+                  <div className="d-inline-block mr-1">
+                    <Radio
+                        label="Service militaire"
+                        color="primary"
+                        defaultChecked={true}
+                        name="military_service"
+                        onChange={() => this.setState({ data: { ...this.state.data, military_service: "Service militaire"}})}
+                    />
+                  </div>
+                  <div className="d-inline-block mr-1">
+                    <Radio
+                        label="oui"
+                        color="success"
+                        defaultChecked={false}
+                        name="military_service"
+                        onChange={() => this.setState({ data: { ...this.state.data, military_service: "oui"}})}
+                    />
+                  </div>
+                  <div className="d-inline-block mr-1">
+                    <Radio
+                        label="non"
+                        color="info"
+                        defaultChecked={false}
+                        name="military_service"
+                        onChange={() => this.setState({ data: { ...this.state.data, military_service: "non"}})}
+                    />
+                  </div>
+              </FormGroup>
+            </Col>
+            <Col md="6" sm="12">
+              <FormGroup>
+                <Input
+                    type="Input-Number" placeholder="Téléphone fixe"
+                    onChange={e => this.setState({ data: { ...this.state.data, office_number: e.target.value} })}
+                />
+              </FormGroup>
+            </Col>
+            <Col md="6" sm="12">
+              <FormGroup>
+                <Input
+                    type="Input-Number" placeholder="Téléphone portable"
+                    onChange={e => this.setState({ data: { ...this.state.data, mobile_number: e.target.value} })}
+                />
               </FormGroup>
             </Col>
             <Col md="6" sm="12">
@@ -241,122 +354,98 @@ class AddUser extends React.Component {
             <Col md="6" sm="12">
               <FormGroup>
                 <Input
-                    type="Input-Number" placeholder="Téléphone portable"
-                    onChange={e => this.setState({ data: { ...this.state.data, mobile_number: e.target.value} })}
+                    type="email"
+                    placeholder="Email"
+                    required
+                    value={this.state.data.email}
+                    onChange={e => this.setState({ data: { ...this.state.data, email: e.target.value} })}
                 />
               </FormGroup>
             </Col>
-            <Col md="6" sm="12">
-              <FormGroup>
-                <CustomInput type="select" name="select" id="status" onChange={e => this.setState({ data: { ...this.state.data, military_service: e.target.value} })}>
-                  <option >Service militaire</option>
-                  <option>oui</option>
-                  <option>non</option>
-                </CustomInput>
-              </FormGroup>
-            </Col>
-              <Col md="6" sm="12">
-              <FormGroup>
-                <Input
-                    type="Input-Number" placeholder="Téléphone fixe"
-                    onChange={e => this.setState({ data: { ...this.state.data, office_number: e.target.value} })}
-                />
-              </FormGroup>
-            </Col>
-            <Col md="6" sm="12">
-              <FormGroup>
-                  <InputMaskDate
-                      onChange={e => this.handledob(e.target.value)}
-                  />
-              </FormGroup>
-            </Col>
+            {/*<Col md="6" sm="12">*/}
+            {/*  <FormGroup>*/}
+            {/*    <CustomInput type="select" name="select" id="city" onChange={e => this.setState({ data: { ...this.state.data, society_related: e.target.value} })}>*/}
+            {/*      <option>EOR</option>*/}
+            {/*      <option>Moneynci</option>*/}
+            {/*      <option>Les deux</option>*/}
+            {/*    </CustomInput>*/}
+            {/*  </FormGroup>*/}
+            {/*</Col>*/}
+            {/*<Col md="6" sm="12">*/}
+            {/*  <FormGroup>*/}
+            {/*    <Input*/}
+            {/*        type="text" placeholder="Nom de jeune fille"*/}
+            {/*        onChange={e => this.setState({ data: { ...this.state.data, maiden_name: e.target.value} })}*/}
+            {/*    />*/}
+            {/*  </FormGroup>*/}
+            {/*</Col>*/}
           </Row>
-          <h4>Perso</h4>
           <Row>
-            <Col md="6" sm="12">
+            <Col className="mt-1" md="6" sm="12">
+            <h5 className="mb-1">
+              <User className="mr-50" size={16} />
+              <span className="align-middle">Adresse du client</span>
+            </h5>
               <FormGroup>
                 <Input
                     type="text" placeholder="Adresse 1"
                     onChange={e => this.setState({ data: { ...this.state.data, personal_address: e.target.value} })}
                 />
               </FormGroup>
-            </Col>
-            <Col md="6" sm="12">
               <FormGroup>
                 <Input
                     type="text" placeholder="Adresse 2"
                     onChange={e => this.setState({ data: { ...this.state.data, personal_address_2: e.target.value} })}
                 />
               </FormGroup>
-            </Col>
-            <Col md="6" sm="12">
               <FormGroup>
                 <Input
                     type="number" placeholder="CP"
                     onChange={e => this.setState({ data: { ...this.state.data, personal_zip_code: e.target.value} })}
                 />
               </FormGroup>
-            </Col>
-            <Col md="6" sm="12">
               <FormGroup>
                 <Input
                     type="text" placeholder="Ville"
                     onChange={e => this.setState({ data: { ...this.state.data, personal_city: e.target.value} })}
                 />
               </FormGroup>
-            </Col>
-            <Col md="6" sm="12">
               <FormGroup>
                 <Input
                     type="text" placeholder="Pays "
                     onChange={e => this.setState({ data: { ...this.state.data, personal_country: e.target.value} })}
                 />
               </FormGroup>
-            </Col>
-          </Row>
-          <h4>Société</h4>
-          <Row>
-            <Col md="6" sm="12">
-              <FormGroup>
-                <Input
-                    type="text" placeholder="Nom Société"
-                    onChange={e => this.setState({ data: { ...this.state.data, society_name: e.target.value} })}
-                />
-              </FormGroup>
-            </Col>
-            <Col md="6" sm="12">
+          </Col>
+            <Col className="mt-1" md="6" sm="12">
+              <h5 className="mb-1">
+                <MapPin className="mr-50" size={16} />
+                <span className="align-middle">Adresse de sa société</span>
+              </h5>
               <FormGroup>
                 <Input
                     type="text" placeholder="Adresse 1"
                     onChange={e => this.setState({ data: { ...this.state.data, society_address: e.target.value} })}
                 />
               </FormGroup>
-            </Col>
-            <Col md="6" sm="12">
               <FormGroup>
                 <Input
                     type="text" placeholder="Adresse 2"
                     onChange={e => this.setState({ data: { ...this.state.data, society_address_2: e.target.value} })}
                 />
               </FormGroup>
-            </Col>
-            <Col md="6" sm="12">
               <FormGroup>
                 <Input
                     type="number" placeholder="CP"
                     onChange={e => this.setState({ data: { ...this.state.data, society_zip_code: e.target.value} })}
                 />
               </FormGroup>
-            </Col>
-            <Col md="6" sm="12">
               <FormGroup>
                 <Input
                     type="text" placeholder="Ville"
                     onChange={e => this.setState({ data: { ...this.state.data, society_city: e.target.value} })}
                 />
               </FormGroup>
-            </Col>
-            <Col md="6" sm="12">
               <FormGroup>
                 <Input
                     type="text" placeholder="Pays"
@@ -388,15 +477,15 @@ class AddUser extends React.Component {
             <Col md={{ size: 8, offset: 4 }}>
               <Button.Ripple
                   color="primary"
-                  type="submit"
                   className="mr-1 mb-1"
+                  onClick={() => this.handleSubmit(0)}
               >
                 Enregistrer
               </Button.Ripple>
               <Button.Ripple
                   color="primary"
-                  type="submit"
                   className="mr-1 mb-1"
+                  onClick={() => this.handleSubmit(1)}
               >
                 Prestations
               </Button.Ripple>
@@ -404,7 +493,6 @@ class AddUser extends React.Component {
           </Row>
         </CardBody>
       </Card>
-      </Form>
     )
   }
 }

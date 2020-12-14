@@ -28,7 +28,7 @@ class UserAccountTab extends React.Component {
     civility: this.props.perso.civility ? this.props.perso.civility : "Monsieur",
     first_name: this.props.perso.first_name,
     last_name: this.props.perso.last_name,
-    role: this.props.data.role,
+    role: this.props.data.role ? this.props.data.role : "Client EOR",
     email: this.props.data.email,
     contact_number: this.props.perso.contact_number,
     office_number: this.props.perso.office_number,
@@ -36,15 +36,17 @@ class UserAccountTab extends React.Component {
     children_number: this.props.perso.children_number,
 
       personal_address: this.props.perso.personal_address,
+      personal_address_2: this.props.perso.personal_address_2,
       personal_zip_code: this.props.perso.personal_zip_code,
       personal_city: this.props.perso.personal_city,
       personal_country: this.props.perso.personal_country,
       society_name: this.props.perso.society_name,
       society_address: this.props.perso.society_address,
+      society_address_2: this.props.perso.society_address_2,
       society_zip_code: this.props.perso.society_zip_code,
       society_city: this.props.perso.society_city,
       society_country: this.props.perso.society_country,
-      military_service: this.props.perso.military_service,
+      military_service: this.props.perso.military_service? this.props.perso.military_service : "Service militaire",
   }
 
   updateUsersInformation = information => {
@@ -55,7 +57,7 @@ class UserAccountTab extends React.Component {
     }
     console.log(localStorage.getItem("token"))
     axios
-        .put("http://localhost:8000/api/users/" + this.props.id, {
+        .put(global.config.server_url+"/users/" + this.props.id, {
           name: information.username,
           email: information.email,
           role: information.role,
@@ -63,7 +65,7 @@ class UserAccountTab extends React.Component {
         }, Config)
         .then(response => {
           axios
-              .put("http://localhost:8000/api/personal_information/" + this.props.id,{
+              .put(global.config.server_url+"/personal_information/" + this.props.id,{
                 civility: information.civility,
                 first_name: information.first_name,
                 last_name: information.last_name,
@@ -74,10 +76,12 @@ class UserAccountTab extends React.Component {
                 office_number: information.office_number,
 
                   personal_address: information.personal_address,
+                  personal_address_2: information.personal_address_2,
                   personal_zip_code: information.personal_zip_code,
                   personal_city: information.personal_city,
                   personal_country: information.personal_country,
                   society_address: information.society_address,
+                  society_address_2: information.society_address_2,
                   society_zip_code: information.society_zip_code,
                   society_city: information.society_city,
                   society_country: information.society_country,
@@ -250,11 +254,30 @@ class UserAccountTab extends React.Component {
                 <Col md="6" sm="12">
                     <FormGroup>
                         <Label for="role">Role</Label>
-                        <CustomInput type="select" name="select" id="role" onChange={e => this.setState({ role: e.target.value })}>
-                            <option>{this.ifDataExist('role')}</option>
-                            <option>user</option>
-                            <option>admin</option>
-                        </CustomInput>
+                        {this.ifDataExist("role") != null &&
+                            <Input type="select" name="select" id="role" defaultValue={this.ifDataExist("role")}
+                                   onChange={e => this.setState({role: e.target.value})}>
+                                <option>Client EOR</option>
+                                <option>Client MAXO</option>
+                                <option>Consultant EOR</option>
+                                <option>Consultant MAXO</option>
+                                <option>Technician EOR</option>
+                                <option>Technician MAXO</option>
+                                <option>Admin</option>
+                            </Input>
+                        }
+                        {this.ifDataExist("role") == null &&
+                        <Input type="select" name="select" id="role" defaultValue="Client EOR"
+                               onChange={e => this.setState({role: e.target.value})}>
+                            <option>Client EOR</option>
+                            <option>Client MAXO</option>
+                            <option>Consultant EOR</option>
+                            <option>Consultant MAXO</option>
+                            <option>Technician EOR</option>
+                            <option>Technician MAXO</option>
+                            <option>Admin</option>
+                        </Input>
+                        }
                     </FormGroup>
                 </Col>
                 <Col md="6" sm="12">
@@ -509,13 +532,23 @@ class UserAccountTab extends React.Component {
                         <span className="align-middle">Adresse du client</span>
                     </h5>
                     <FormGroup>
-                        <Label for="address1">Adresse</Label>
+                        <Label for="address1">Adresse1</Label>
                         <Input
                             type="text"
                             id="address1"
                             defaultValue={this.ifExist("personal_address")}
                             onChange={e => this.setState({ personal_address: e.target.value })}
-                            placeholder="Address personnelle"
+                            placeholder="Address personnelle1"
+                        />
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="address1">Adresse2</Label>
+                        <Input
+                            type="text"
+                            id="address2"
+                            defaultValue={this.ifExist("personal_address_2")}
+                            onChange={e => this.setState({ personal_address_2: e.target.value })}
+                            placeholder="Address personnelle2"
                         />
                     </FormGroup>
                     <FormGroup form-group-lg>
@@ -555,13 +588,23 @@ class UserAccountTab extends React.Component {
                         <span className="align-middle">Adresse de sa société</span>
                     </h5>
                     <FormGroup>
-                        <Label for="address1">Adresse</Label>
+                        <Label for="address1">Adresse1</Label>
                         <Input
                             type="text"
                             id="address1"
-                            placeholder="Address de société"
+                            placeholder="Address de société1"
                             defaultValue={this.ifExist("society_address")}
                             onChange={e => this.setState({ society_address: e.target.value })}
+                        />
+                    </FormGroup>
+                    <FormGroup>
+                        <Label for="address2">Adresse2</Label>
+                        <Input
+                            type="text"
+                            id="address2"
+                            placeholder="Address de société2"
+                            defaultValue={this.ifExist("society_address_2")}
+                            onChange={e => this.setState({ society_address_2: e.target.value })}
                         />
                     </FormGroup>
                     <FormGroup form-group-lg>

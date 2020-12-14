@@ -7,6 +7,7 @@ import { Badge } from "reactstrap"
 import { ChevronRight } from "react-feather"
 import { FormattedMessage } from "react-intl"
 import { history } from "../../../../../history"
+import axios from "axios";
 
 class SideMenuContent extends React.Component {
   constructor(props) {
@@ -19,6 +20,7 @@ class SideMenuContent extends React.Component {
     }
   }
   state = {
+    badge:"",
     flag: true,
     isHovered: false,
     activeGroups: [],
@@ -105,7 +107,17 @@ class SideMenuContent extends React.Component {
   }
 
   componentDidMount() {
-    this.initRender(this.parentArr[0] ? this.parentArr[0] : [])
+    this.initRender(this.parentArr[0] ? this.parentArr[0] : []);
+
+    const Config = {
+      headers: {
+        Authorization: "Bearer " + localStorage.getItem("token")
+      }
+    }
+    axios.get(global.config.server_url + "/unread_count", Config).then(response => {
+      if(response.data.count > 0)
+        this.setState({ badge:response.data.count + " news" })
+    })
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -196,10 +208,10 @@ class SideMenuContent extends React.Component {
               </span>
             </div>
 
-            {item.badge ? (
+            {item.id == "tasks" && this.state.badge != "" ? (
               <div className="menu-badge">
-                <Badge color={item.badge} className="mr-1" pill>
-                  {item.badgeText}
+                <Badge color="primary" className="mr-1" pill>
+                  {this.state.badge}
                 </Badge>
               </div>
             ) : (

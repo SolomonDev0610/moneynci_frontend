@@ -13,7 +13,7 @@ import Checkbox from "../../../components/@vuexy/checkbox/CheckboxesVuexy"
 import PerfectScrollbar from "react-perfect-scrollbar"
 import { connect } from "react-redux"
 import {
-  starTask,
+  readTask,
   completeTask,
   importantTask,
   updateTask,
@@ -201,7 +201,7 @@ class TaskSidebar extends React.Component {
                   }`}
                   onClick={() => {
                     if (this.props.taskToUpdate !== null){
-                      this.props.starTask(this.props.taskToUpdate)
+                      this.props.readTask(this.props.taskToUpdate)
                     }
                     else{
                       this.setState({
@@ -436,7 +436,7 @@ const mapStateToProps = state => {
 export default connect(mapStateToProps, {
   completeTask,
   importantTask,
-  starTask,
+  readTask,
   updateTask,
   updateLabel,
   addNewTask

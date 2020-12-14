@@ -6,7 +6,7 @@ import { connect } from "react-redux"
 import {
   getTodos,
   completeTask,
-  starTask,
+  readTask,
   importantTask,
   trashTask,
   searchTask
@@ -126,7 +126,7 @@ class TodoList extends React.Component {
                     className="todo-item-favorite d-inline-block mr-1 mr-sm-0"
                     onClick={e => {
                       e.stopPropagation()
-                      this.props.starTask(todo)
+                      this.props.readTask(todo)
                     }}
                   >
                     <Star
@@ -208,7 +208,7 @@ const mapStateToProps = state => {
 export default connect(mapStateToProps, {
   getTodos,
   completeTask,
-  starTask,
+  readTask,
   importantTask,
   trashTask,
   searchTask

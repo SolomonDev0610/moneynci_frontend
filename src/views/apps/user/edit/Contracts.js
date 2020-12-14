@@ -129,7 +129,7 @@ class Contracts extends React.Component {
         Authorization: "Bearer " + localStorage.getItem("token")
       }
     }
-    await axios.get("http://localhost:8000/api/documents/user/" + this.props.id, Config).then(response => {
+    await axios.get(global.config.server_url + "/documents/user/" + this.props.id, Config).then(response => {
       let rowData = response.data
       this.setState({ rowData })
     })
@@ -141,7 +141,7 @@ class Contracts extends React.Component {
         Authorization: "Bearer " + localStorage.getItem("token")
       }
     }
-    axios.delete("http://localhost:8000/api/documents/" + id, Config).then(response => {})
+    axios.delete(global.config.server_url + "/documents/" + id, Config).then(response => {})
   }
 
   onGridReady = params => {
@@ -229,7 +229,7 @@ class Contracts extends React.Component {
                   })}
               >
                 <CardHeader>
-                  <h4>Documents de {this.props.name}</h4>
+                  <h4>Contrats</h4>
                   <div className="actions">
                     <ChevronDown
                         className="collapse-icon mr-50"
@@ -382,52 +382,12 @@ class Contracts extends React.Component {
                 <CardBody>
                   <div className="ag-theme-material ag-grid-table">
                     <div className="ag-grid-actions d-flex justify-content-between flex-wrap mb-1">
-                      <div className="sort-dropdown">
-                        <UncontrolledDropdown className="ag-dropdown p-1">
-                          <DropdownToggle tag="div">
-                            1 - {pageSize} of 150
-                            <ChevronDown className="ml-50" size={15} />
-                          </DropdownToggle>
-                          <DropdownMenu right>
-                            <DropdownItem
-                                tag="div"
-                                onClick={() => this.filterSize(20)}
-                            >
-                              20
-                            </DropdownItem>
-                            <DropdownItem
-                                tag="div"
-                                onClick={() => this.filterSize(50)}
-                            >
-                              50
-                            </DropdownItem>
-                            <DropdownItem
-                                tag="div"
-                                onClick={() => this.filterSize(100)}
-                            >
-                              100
-                            </DropdownItem>
-                            <DropdownItem
-                                tag="div"
-                                onClick={() => this.filterSize(150)}
-                            >
-                              150
-                            </DropdownItem>
-                          </DropdownMenu>
-                        </UncontrolledDropdown>
-                      </div>
                       <div className="filter-actions d-flex">
-                        <Input
-                            className="w-50 mr-1 mb-1 mb-sm-0"
-                            type="text"
-                            placeholder="search..."
-                            onChange={e => this.updateSearchQuery(e.target.value)}
-                            value={this.state.searchVal}
-                        />
                         <div>
                           <Button.Ripple className="mr-1 mb-1" outline color="primary"
+                                         style={{}}
                                          onClick={() => history.push("/pages/create-contract/" + this.props.id)}>
-                            <FolderPlus size={15} />
+                            <FolderPlus size={15} /> contrat
                           </Button.Ripple>
                         </div>
                         <div className="dropdown mr-1 mb-1 d-inline-block">

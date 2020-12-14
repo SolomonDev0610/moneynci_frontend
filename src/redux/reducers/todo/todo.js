@@ -17,8 +17,8 @@ const todo = (state = initialState, action) => {
       state.todos.find(i => i.id === action.id).isCompleted = !action.value
       return { ...state }
 
-    case "STAR_TASK":
-      state.todos.find(i => i.id === action.id).isStarred = !action.value
+    case "READ_TASK":
+      state.todos.find(i => i.id === action.id).isRead = !action.value
       return { ...state }
 
     case "IMPORTANT_TASK":
@@ -37,8 +37,15 @@ const todo = (state = initialState, action) => {
 
     case "UPDATE_TASK":
       let todoToUpdate = state.todos.find(i => i.id === action.id)
-      todoToUpdate.title = action.title
-      todoToUpdate.desc = action.desc
+
+      todoToUpdate.title = action.task.title
+      todoToUpdate.desc = action.task.desc
+      todoToUpdate.type = action.task.type
+      todoToUpdate.customer_id = action.task.receiver
+      todoToUpdate.isCompleted = action.task.isCompleted
+      todoToUpdate.isImportant = action.task.isImportant
+      todoToUpdate.isRead = action.task.isRead
+      todoToUpdate.end_date = action.task.end_date
       return { ...state }
 
     case "ADD_TASK":

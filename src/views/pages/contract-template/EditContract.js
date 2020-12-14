@@ -172,7 +172,7 @@ class EditContract extends React.Component {
               Authorization: "Bearer " + localStorage.getItem("token")
           }
       }
-      axios.get("http://localhost:8000/api/get_contract/" + this.props.match.params.id, Config).then(response => {
+      axios.get(global.config.server_url + "/get_contract/" + this.props.match.params.id, Config).then(response => {
           let rowData = response.data.data
           let perso = response.data.data.personal_informations;
           let userData = response.data.data.user;
@@ -210,7 +210,7 @@ class EditContract extends React.Component {
       parameters['values'] = JSON.stringify(input_values);
       parameters['advanced_payment'] = this.state.formValues['TOTALTTC'];
 
-      axios.put("http://localhost:8000/api/documents/" + this.props.match.params.id, parameters, Config)
+      axios.put(global.config.server_url + "/documents/" + this.props.match.params.id, parameters, Config)
           .then(function(result) {
               history.push("/app/user/edit/" + userid + "/3")
           })
@@ -370,7 +370,8 @@ class EditContract extends React.Component {
                     <Col md="6" sm="12">
                         <div className="recipient-info" style={{paddingTop:'0.5rem', paddingBottom:'0.5rem'}}>
                             <Row>
-                                <Col md="5" sm="12" className="contract-caption1-section"> <h5 className="bold-black">Société</h5> </Col>
+                                <Col md="4" sm="12" className="contract-caption1-section"> <h5 className="bold-black">Société:</h5> </Col>
+                                <Col md="8" sm="12" className="contract-caption1-section"> <h5 className="bold-black">{this.ifExist("society_name")}</h5> </Col>
                             </Row>
                             <Row>
                                 <Col md="4" sm="12" className="contract-caption1-section"> <h5 className="bold-black">Adresse</h5> </Col>
